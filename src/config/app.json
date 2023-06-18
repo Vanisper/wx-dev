@@ -1,6 +1,7 @@
 {
     "serverUrl": "http://whisper.nat300.top",
     "port": "3002",
+    "isDev": true,
     "allow": {
         "all": "*",
         "hosts": [

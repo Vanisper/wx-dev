@@ -11,7 +11,7 @@ const wxCheckRouters = Router();
 // 那些关注的人
 let subscribe_arr: string[] = [];
 const serverUrl = configs.serverUrl;
-const DEV = true;
+const DEV = configs.isDev;
 const TOKEN = DEV ? "vzyuyb36ivdm27kgprhuh4q0g6zyx3cr" : configs.wxConfig.token;
 const APPID = DEV ? "wxfee8f67beaaa957e" : configs.wxConfig.appId;
 const APPSECRET = DEV ? "24bcbac742a7fab34d7d97f598e90ba3" : configs.wxConfig.appSecret;
