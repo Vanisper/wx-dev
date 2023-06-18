@@ -1,8 +1,7 @@
 FROM gplane/pnpm:8.2.0-node18
 WORKDIR /usr/src/app
-COPY package*.json ./
+COPY *.json ./
 COPY *.yaml ./
-COPY tsconfig.json ./
 RUN pnpm install
 RUN pnpm run build
 COPY . ./
