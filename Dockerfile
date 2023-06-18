@@ -4,4 +4,4 @@ COPY package*.json ./
 COPY *.yaml ./
 RUN npm install pnpm -g
 COPY . ./
-CMD [ "node", "dist/app.js" ]
+# CMD [ "node", "dist/app.js" ]
