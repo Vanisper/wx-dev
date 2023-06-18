@@ -6,7 +6,7 @@
 	"scripts": {
 		"start": "node dist/app.js",
 		"dev": "nodemon src/app.ts",
-		"bulid": "tsc -p .",
+		"build": "tsc -p .",
 		"kill-node": "taskkill /f /t /im node.exe"
 	},
 	"dependencies": {
