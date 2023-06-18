@@ -3,6 +3,7 @@ WORKDIR /usr/src/app
 COPY *.json ./
 COPY *.yaml ./
 RUN pnpm install
+COPY . ./
 RUN pnpm run build
 COPY . ./
 CMD [ "node", "dist/app.js" ]
