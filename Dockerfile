@@ -1,7 +1,7 @@
-FROM alpine:3.13
+FROM alpine:3.18
 RUN apk add ca-certificates
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tencent.com/g' /etc/apk/repositories \
-&& apk add --update --no-cache nodejs npm
+&& apk add --update --no-cache nodejs=18.16.0 npm=9.6.6
 
 RUN npm config set registry https://mirrors.cloud.tencent.com/npm/
 RUN npm install pnpm -g
