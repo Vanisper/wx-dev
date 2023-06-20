@@ -4,12 +4,12 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tencent.com/g' /etc/apk/repositorie
 && apk add --update --no-cache nodejs npm
 
 RUN npm config set registry https://mirrors.cloud.tencent.com/npm/
-# RUN npm install pnpm -g
-RUN npm -v
+RUN npm install pnpm -g
+RUN pnpm -v
 
 WORKDIR /app
-COPY *.json /app
-COPY *.yaml /app
+COPY *.json /app/
+COPY *.yaml /app/
 RUN npm install
 COPY . /app
 RUN npm run build
