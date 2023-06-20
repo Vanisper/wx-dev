@@ -10,9 +10,9 @@ RUN pnpm -v
 WORKDIR /app
 COPY *.json /app/
 COPY *.yaml /app/
-RUN npm install
+RUN pnpm install
 COPY . /app
-RUN npm run build
+RUN pnpm run build
 COPY . /app
 CMD [ "node", "dist/app.js" ]
 # FROM gplane/pnpm:8.2.0-node18
