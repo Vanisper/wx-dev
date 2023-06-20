@@ -4,14 +4,15 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tencent.com/g' /etc/apk/repositorie
 && apk add --update --no-cache nodejs npm
 
 RUN npm config set registry https://mirrors.cloud.tencent.com/npm/
-RUN npm install pnpm -g
+# RUN npm install pnpm -g
+RUN npm -v
 
 WORKDIR /app
 COPY *.json /app
 COPY *.yaml /app
-RUN pnpm install
+RUN npm install
 COPY . /app
-RUN pnpm run build
+RUN npm run build
 COPY . /app
 CMD [ "node", "dist/app.js" ]
 # FROM gplane/pnpm:8.2.0-node18
