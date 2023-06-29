@@ -195,8 +195,9 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
     if (request.action == "CheckContainerPath") {
         return res.send('success');
     }
-    console.log("消息类型:", request.MsgType);
+
     if (request.MsgType) {
+        console.log("消息类型:", request.MsgType);
         // 微信云部署端接收用户消息
         // 回复信息给 微信服务器
         let content = ''
@@ -235,6 +236,7 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
                   <MsgType><![CDATA[text]]></MsgType>
                   <Content><![CDATA[${content}]]></Content>
                 </xml>`
+        console.log(msgStr);        
         return res.send(msgStr)
     }
     let { signature, echostr, timestamp, nonce } = req.query;
