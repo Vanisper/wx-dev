@@ -227,17 +227,13 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
             content = '其他信息来源！' + JSON.stringify(request)
         }
 
-
-        // 根据来时的信息格式，重组返回。(注意中间不能有空格)
-        let msgStr = `<xml>
-                  <ToUserName><![CDATA[${request.FromUserName}]]></ToUserName>
-                  <FromUserName><![CDATA[${request.ToUserName}]]></FromUserName>
-                  <CreateTime>${Date.now()}</CreateTime>
-                  <MsgType><![CDATA[text]]></MsgType>
-                  <Content><![CDATA[${content}]]></Content>
-                </xml>`
-        console.log(msgStr, content);
-        return res.send(msgStr)
+        return res.send({
+            "ToUserName": request.FromUserName,
+            "FromUserName": request.ToUserName,
+            "CreateTime": Date.now(), // 整型，例如：1648014186
+            "MsgType": "text",
+            "Content": content
+        })
     }
     let { signature, echostr, timestamp, nonce } = req.query;
     let relStr = getValidateStr(timestamp, nonce)
@@ -307,7 +303,7 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
           <MsgType><![CDATA[text]]></MsgType>
           <Content><![CDATA[${content}]]></Content>
         </xml>`
-        res.send(msgStr)
+        return res.send(msgStr)
         // 非常感谢尚硅谷的视频
         // 微信公众号开发接收信息 https://m.bilibili.com/video/BV1XJ411P7T4?p=10&share_medium=iphone&share_plat=ios&share_source=WEIXIN&share_tag=s_i&timestamp=1648654864&unique_k=U06F2iS
 
