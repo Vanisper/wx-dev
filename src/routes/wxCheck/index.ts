@@ -236,7 +236,7 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
                   <MsgType><![CDATA[text]]></MsgType>
                   <Content><![CDATA[${content}]]></Content>
                 </xml>`
-        console.log(msgStr);        
+        console.log(msgStr, content);
         return res.send(msgStr)
     }
     let { signature, echostr, timestamp, nonce } = req.query;
