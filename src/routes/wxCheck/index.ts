@@ -186,13 +186,54 @@ wxCheckRouters.get("/wxCheck", async (req, res) => {
 });
 
 wxCheckRouters.post("/wxCheck", async (req, res) => {
-    console.log('post-wxCheck:', req.query);
-    console.log(req.body, typeof req.body)
-    const { action } = req.body;
+    console.log('post-wxCheck-query:', req.query);
+    console.log("post-wxCheck-body:", req.body)
+    const request = req.body;
 
     // 微信云部署消息推送的验证接口
-    if (action == "CheckContainerPath") {
+    if (request.action == "CheckContainerPath") {
         return res.send('success');
+    }
+    if (request.MsgType) {
+        // 微信云部署端接收用户消息
+        // 回复信息给 微信服务器
+        let content = ''
+        if (request.MsgType == 'text') {
+            if (request.Content == "1") {
+                content = '努力吧！'
+            } else if (request.Content == "2") {
+                content = '再坚持一会，就成功了'
+            } else if (request.Content.includes('爱')) {
+                content = '爱你一万年！'
+            } else {
+                content = '谢谢！'
+            }
+        }
+        else if (request.MsgType == 'event') {
+            content = 'event事件'
+            if (request.Event == 'SCAN') {
+                content = '好家伙，手机扫码' + request.EventKey
+            } else if (request.Event == 'subscribe') {
+                content = '好家伙，欢迎您的关注！' + request.EventKey
+            }
+            if (request.Event == 'unsubscribe') {
+                content = '好家伙，你居然敢取笑关注？' + request.EventKey
+            }
+        }
+        else {
+            content = '其他信息来源！' + JSON.stringify(request)
+        }
+
+
+        // 根据来时的信息格式，重组返回。(注意中间不能有空格)
+        let msgStr = `<xml>
+                  <ToUserName><![CDATA[${request.FromUserName}]]></ToUserName>
+                  <FromUserName><![CDATA[${request.ToUserName}]]></FromUserName>
+                  <CreateTime>${Date.now()}</CreateTime>
+                  <MsgType><![CDATA[text]]></MsgType>
+                  <Content><![CDATA[${content}]]></Content>
+                </xml>`
+        return res.send(msgStr)
     }
     let { signature, echostr, timestamp, nonce } = req.query;
     let relStr = getValidateStr(timestamp, nonce)
