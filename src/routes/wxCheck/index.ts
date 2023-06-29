@@ -187,6 +187,8 @@ wxCheckRouters.get("/wxCheck", async (req, res) => {
 
 wxCheckRouters.post("/wxCheck", async (req, res) => {
     console.log('post-wxCheck:', req.query);
+    console.log(req.params);
+        
     let { signature, echostr, timestamp, nonce } = req.query;
     let relStr = getValidateStr(timestamp, nonce)
     if (relStr == signature) {

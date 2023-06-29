@@ -9,8 +9,8 @@
         ]
     },
     "wxConfig": {
-        "token": "vzyuyb36ivdm27kgprhuh4q0g6zyx3cr",
-        "appId": "wxfee8f67beaaa957e",
-        "appSecret": "24bcbac742a7fab34d7d97f598e90ba3"
+        "token": "you_token",
+        "appId": "you_appid",
+        "appSecret": "you_appSecret"
     }
 }
