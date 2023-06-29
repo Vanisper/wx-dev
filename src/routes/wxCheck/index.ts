@@ -186,7 +186,8 @@ wxCheckRouters.get("/wxCheck", async (req, res) => {
 });
 
 wxCheckRouters.post("/wxCheck", async (req, res) => {
-    console.log('post-wxCheck:', req.query, req.body);
+    console.log('post-wxCheck:', req.query);
+    console.log(req.body, typeof req.body)
     const { action } = req.body;
 
     // 微信云部署消息推送的验证接口
