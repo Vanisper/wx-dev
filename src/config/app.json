@@ -2,6 +2,7 @@
     "serverUrl": "http://whisper.nat300.top",
     "port": "3000",
     "isDev": true,
+    "wxServer": true,
     "allow": {
         "all": "*",
         "hosts": [

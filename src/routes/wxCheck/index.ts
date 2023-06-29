@@ -5,7 +5,6 @@ import axios from "axios";
 import { IWXError, IWXQrCodeCreateTemp, IWXQrCodeRes, IWXTicketRes } from "./types";
 import { getImageFromUrl } from "../../utils/files";
 import configs from "../../config/app.json";
-import { log } from "console";
 
 
 const wxCheckRouters = Router();
@@ -321,7 +320,7 @@ wxCheckRouters.post('/getQrCode', async (req, res) => {
     if ("errcode" in ticketObj) {
         return res.send(ticketObj);
     }
-    const QRUrl = `https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=${ticketObj.ticket}`
+    const QRUrl = `https://mp.weixin.qq.com/cgi-bin/showqrcode` + (configs.wxServer ? "" : `?ticket=${ticketObj.ticket}`)
     switch (type) {
         case "image":
             res.send(await getImageFromUrl(QRUrl));
@@ -339,6 +338,12 @@ wxCheckRouters.post('/getQrCode', async (req, res) => {
 
 function getQr_ticket(data: IWXQrCodeCreateTemp) {
     return new Promise<IWXError | IWXQrCodeRes>(async (resolve, reject) => {
+        if (configs.wxServer) {
+            const url = `https://api.weixin.qq.com/cgi-bin/qrcode/create`;
+            axios.post(url, data).then(({ data }) => {
+                resolve(data)
+            })
+        }
         let access_token = ACCESS_TOKEN_DATA.access_token;
         if ((enableTimestamp - transitionTime) < Date.now()) {
             const ATRes = await getAToken();
