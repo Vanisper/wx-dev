@@ -5,6 +5,7 @@ import axios from "axios";
 import { IWXError, IWXQrCodeCreateTemp, IWXQrCodeRes, IWXTicketRes } from "./types";
 import { getImageFromUrl } from "../../utils/files";
 import configs from "../../config/app.json";
+import { log } from "console";
 
 
 const wxCheckRouters = Router();
@@ -194,6 +195,7 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
     if (request.action == "CheckContainerPath") {
         return res.send('success');
     }
+    console.log("消息类型:", request.MsgType);
     if (request.MsgType) {
         // 微信云部署端接收用户消息
         // 回复信息给 微信服务器
