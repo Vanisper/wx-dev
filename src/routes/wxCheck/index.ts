@@ -188,7 +188,12 @@ wxCheckRouters.get("/wxCheck", async (req, res) => {
 wxCheckRouters.post("/wxCheck", async (req, res) => {
     console.log('post-wxCheck:', req.query);
     console.log(req.body);
-        
+    const { action } = req.body;
+
+    // 微信云部署消息推送的验证接口
+    if (action == "CheckContainerPath") {
+        res.send('success');
+    }
     let { signature, echostr, timestamp, nonce } = req.query;
     let relStr = getValidateStr(timestamp, nonce)
     if (relStr == signature) {
