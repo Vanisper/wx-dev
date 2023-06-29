@@ -341,7 +341,7 @@ function getQr_ticket(data: IWXQrCodeCreateTemp) {
         if (configs.wxServer) {
             const url = `https://api.weixin.qq.com/cgi-bin/qrcode/create`;
             axios.post(url, data).then(({ data }) => {
-                resolve(data)
+               return resolve(data)
             })
         }
         let access_token = ACCESS_TOKEN_DATA.access_token;
