@@ -5,16 +5,20 @@ import axios from "axios";
 import { IWXError, IWXQrCodeCreateTemp, IWXQrCodeRes, IWXTicketRes } from "./types";
 import { getImageFromUrl } from "../../utils/files";
 import configs from "../../config/app.json";
-
+import * as fs from "fs";
+import * as https from 'https';
+import FormData from "form-data";
+import { wxResMusic } from "./wxRes";
 
 const wxCheckRouters = Router();
 // 那些关注的人
 let subscribe_arr: string[] = [];
 const serverUrl = configs.serverUrl;
 const DEV = configs.isDev;
-const TOKEN = DEV ? "vzyuyb36ivdm27kgprhuh4q0g6zyx3cr" : configs.wxConfig.token;
-const APPID = DEV ? "wxfee8f67beaaa957e" : configs.wxConfig.appId;
-const APPSECRET = DEV ? "24bcbac742a7fab34d7d97f598e90ba3" : configs.wxConfig.appSecret;
+const TOKEN = DEV ? "测试号TOKEN" : configs.wxConfig.token;
+const APPID = DEV ? "测试号APPID" : configs.wxConfig.appId;
+const APPSECRET = DEV ? "测试号APPSECRET" : configs.wxConfig.appSecret;
+// 获取access_token
 const getAToken = () => {
     return new Promise<{
         data: string,
@@ -36,17 +40,19 @@ const getAToken = () => {
         })
     })
 }
+// 获取ticket
 const getNewTicket = (access_token: string) => {
     console.log('access_token', access_token);
-    return new Promise<IWXTicketRes | IWXError>((resolve, reject) => {
+    return new Promise<IWXTicketRes | IWXError>((resolve, _reject) => {
         const ticket_url = `https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${access_token}&type=jsapi`;
         axios.get(ticket_url).then(({ data }) => {
             resolve(data)
         })
     })
 }
+// 验证字符串
 const getValidateStr = (timestamp: any, nonce: any) => sha1([TOKEN, timestamp, nonce].sort().join(""));
-
+const postThumbApi = "https://api.weixin.qq.com/cgi-bin/media/upload?type=thumb" + (configs.wxServer ? "" : "&access_token=");
 // 有效期
 var enableTimestamp = 0;
 
@@ -131,8 +137,9 @@ async function InitData() {
     return config_obj
 }
 
-InitData();
-
+if (!configs.wxServer) {
+    InitData();
+}
 
 // 记录关注结果
 wxCheckRouters.post('/isSubscribe', async (req, res) => {
@@ -185,6 +192,35 @@ wxCheckRouters.get("/wxCheck", async (req, res) => {
     }
 });
 
+function downLoad(url: string, name: string, path: string) {
+    if (!fs.existsSync(path)) {
+        fs.mkdirSync(path, { recursive: true });
+    }
+    const saveFilePath = `${path}/${name}`;
+    if (!fs.existsSync(saveFilePath)) {
+        return new Promise<boolean>((resolve, reject) => {
+            const file = fs.createWriteStream(saveFilePath);
+            https
+                .get(url, (response) => {
+                    response.pipe(file);
+                    file.on('finish', () => {
+                        file.close();
+                        resolve(true);
+                    });
+                })
+                .on('error', (error) => {
+                    fs.unlinkSync(saveFilePath);
+                    reject(error);
+                });
+        });
+    }
+    return Promise.resolve(false);
+}
+function concatenateSingers(singer: string): string {
+    const singersArray: string[] = singer.split("&");
+    const concatenatedSingers: string = singersArray.join(" and ");
+    return concatenatedSingers;
+}
 wxCheckRouters.post("/wxCheck", async (req, res) => {
     console.log('post-wxCheck-query:', req.query);
     console.log("post-wxCheck-body:", req.body)
@@ -194,21 +230,61 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
     if (request.action == "CheckContainerPath") {
         return res.send('success');
     }
-
+    // 微信云部署后台可以选择传参为json格式，接收和返回均为json，比较方便。
     if (request.MsgType) {
         console.log("消息类型:", request.MsgType);
         // 微信云部署端接收用户消息
         // 回复信息给 微信服务器
         let content = ''
         if (request.MsgType == 'text') {
-            if (request.Content == "1") {
-                content = '努力吧！'
-            } else if (request.Content == "2") {
-                content = '再坚持一会，就成功了'
-            } else if (request.Content.includes('爱')) {
-                content = '爱你一万年！'
+            const searchUrl = `/search?format&kw=${encodeURIComponent(request.Content)}`;
+            const arr = (await axios.get(searchUrl) as any[]);
+            const arrLength = arr.length;
+            let cut = arrLength < 10 ? arrLength : 10;
+            const name = []
+            const artlist = []
+            const mp3 = []
+            const PREV = (request.Content as string).split(" ")[0];
+            const RID = (request.Content as string).split(" ")[1];
+            if (PREV == "play") {
+                if (RID != "") {
+                    const musicInfo = (await axios.get(`/search?rid=${RID}`)) as any;
+                    const mp3Link = musicInfo.mp3Url;
+                    const singer = musicInfo.artist;
+                    const title = musicInfo.name;
+                    const pic120 = musicInfo.pic120;
+                    const album = musicInfo.album;
+                    const thumb = singer + "-" + album + "-" + title + "." + pic120.split(".").pop();
+                    const fileFullPath = "./thumb/" + thumb;
+                    let thumb_media_id = "";
+                    if (title) {
+                        downLoad(pic120, thumb, "./thumb");
+                        if (fs.existsSync(fileFullPath)) {
+                            const formData = new FormData();
+                            formData.append('media', fs.createReadStream(fileFullPath));
+                            axios.post(postThumbApi, formData, {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data',
+                                },
+                            }).then(({ data }) => {
+                                if (!(data.errcode)) {
+                                    thumb_media_id = data.thumb_media_id;
+                                }
+                            })
+                        }
+                    }
+                    const result = wxResMusic(request.FromUserName, request.ToUserName, title, concatenateSingers(singer), mp3Link, mp3Link, thumb_media_id, true);
+                    return res.send(result)
+                }
             } else {
-                content = '谢谢！'
+                for (let i = 0; i < cut; i++) {
+                    name[i] = arr[i].name;
+                    artlist[i] = arr[i].artist;
+                    const url = arr[i].mp3Url;
+                    const rid = arr[i].rid;
+                    mp3[i] = `<a href="weixin://bizmsgmenu?msgmenucontent=play ${rid}&msgmenuid=${request.MsgId}">[${i + 1}] ${name[i]}</a> - `;
+                    content = content + mp3[i] + artlist[i] + "\n";
+                }
             }
         }
         else if (request.MsgType == 'event') {
@@ -341,7 +417,7 @@ function getQr_ticket(data: IWXQrCodeCreateTemp) {
         if (configs.wxServer) {
             const url = `https://api.weixin.qq.com/cgi-bin/qrcode/create`;
             axios.post(url, data).then(({ data }) => {
-               return resolve(data)
+                return resolve(data)
             })
         }
         let access_token = ACCESS_TOKEN_DATA.access_token;

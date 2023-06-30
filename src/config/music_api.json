@@ -1,0 +1,53 @@
+{
+  "kuwo": {
+    "search": {
+      "type": "get",
+      "url": "https://www.kuwo.cn/api/www/search/searchMusicBykeyWord",
+      "headers": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36 Edg/103.0.1264.62",
+        "Cookie": "kw_token=KIT9KI5M1HD",
+        "Referer": "https://www.kuwo.cn/search/list?key=",
+        "csrf": "KIT9KI5M1HD"
+      },
+      "params": {
+        "key": "伟大的作品",
+        "reqId": "d58b8580-0914-11ed-bed3-51cdb43f7130",
+        "httpsStatus": "1",
+        "pn": "1",
+        "rn": "25"
+      }
+    },
+    "search_rid": {
+      "type": "get",
+      "url": "https://www.kuwo.cn/api/www/music/musicInfo",
+      "headers": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.114 Safari/537.36 Edg/103.0.1264.62",
+        "Cookie": "kw_token=KIT9KI5M1HD",
+        "Referer": "https://www.kuwo.cn/search/list?key=",
+        "csrf": "KIT9KI5M1HD"
+      },
+      "params": {
+        "mid": "76864450",
+        "reqId": "d58b8580-0914-11ed-bed3-51cdb43f7130",
+        "httpsStatus": "1"
+      }
+    },
+    "download": {
+      "type": "get",
+      "url": "https://antiserver.kuwo.cn/anti.s?type=convert_url",
+      "headers": {},
+      "params": {
+        "rid": "226543302",
+        "format": "mp3|aac"
+      }
+    },
+    "mv": {
+      "type": "get",
+      "url": "https://www.kuwo.cn/api/v1/www/music/playUrl",
+      "headers": {},
+      "params": {
+        "mid": "226543302"
+      }
+    }
+  }
+}
