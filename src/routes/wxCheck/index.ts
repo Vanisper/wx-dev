@@ -239,6 +239,7 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
         if (request.MsgType == 'text') {
             const searchUrl = `/search?format&kw=${encodeURIComponent(request.Content)}`;
             const arr = (await axios.get(searchUrl) as any[]);
+            console.log(searchUrl, arr);
             const arrLength = arr.length;
             let cut = arrLength < 10 ? arrLength : 10;
             const name = []
