@@ -239,14 +239,14 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
         if (request.MsgType == 'text') {
             const searchUrl = `http://localhost:${configs.port}/search?format&kw=${encodeURIComponent(request.Content)}`;
             const arr = (await axios.get(searchUrl) as any[]);
-            console.log(arr);
             const arrLength = arr.length;
             let cut = arrLength < 10 ? arrLength : 10;
-            const name = []
-            const artlist = []
-            const mp3 = []
+            let name = []
+            let artlist = []
+            let mp3 = []
             const PREV = (request.Content as string).split(" ")[0];
             const RID = (request.Content as string).split(" ")[1];
+            console.log(arr[0], arrLength);
             if (PREV == "play") {
                 if (RID != "") {
                     const musicInfo = (await axios.get(`http://localhost:${configs.port}/search?rid=${RID}`)) as any;
