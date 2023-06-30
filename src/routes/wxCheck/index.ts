@@ -258,7 +258,7 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
                     const fileFullPath = "./thumb/" + thumb;
                     let thumb_media_id = "";
                     if (title) {
-                        downLoad(pic120, thumb, "./thumb");
+                        console.log(await downLoad(pic120, thumb, "./thumb"));
                         if (fs.existsSync(fileFullPath)) {
                             const formData = new FormData();
                             formData.append('media', fs.createReadStream(fileFullPath));
@@ -267,6 +267,7 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
                                     'Content-Type': 'multipart/form-data',
                                 },
                             }).then(({ data }) => {
+                                console.log(data);
                                 if (!(data.errcode)) {
                                     thumb_media_id = data.thumb_media_id;
                                 }
@@ -274,6 +275,7 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
                         }
                     }
                     const result = wxResMusic(request.FromUserName, request.ToUserName, title, concatenateSingers(singer), mp3Link, mp3Link, thumb_media_id, true);
+                    console.log(result);
                     return res.send(result)
                 }
             } else {
