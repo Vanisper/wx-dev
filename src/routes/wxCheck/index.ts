@@ -262,21 +262,19 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
                         if (fs.existsSync(fileFullPath)) {
                             const formData = new FormData();
                             formData.append('media', fs.createReadStream(fileFullPath));
-                            axios.post(postThumbApi, formData, {
+                            const data = (await axios.post(postThumbApi, formData, {
                                 headers: {
                                     'Content-Type': 'multipart/form-data',
                                 },
-                            }).then(({ data }) => {
-                                console.log(data);
-                                if (!(data.errcode)) {
-                                    thumb_media_id = data.thumb_media_id;
-                                    const result = wxResMusic(request.FromUserName, request.ToUserName, title, concatenateSingers(singer), mp3Link, mp3Link, thumb_media_id, true);
-                                    return res.send(result)
-                                }
-                            })
+                            })).data
+                            if (!data.errcode) {
+                                thumb_media_id = data.thumb_media_id;
+                            }
                         }
                     }
-
+                    const result = wxResMusic(request.FromUserName, request.ToUserName, title, concatenateSingers(singer), mp3Link, mp3Link, thumb_media_id, true);
+                    console.log(result);
+                    return res.send(result)
                 }
             } else {
                 for (let i = 0; i < cut; i++) {
