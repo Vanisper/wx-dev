@@ -248,7 +248,7 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
             const RID = (request.Content as string).split(" ")[1];
             if (PREV == "play") {
                 if (RID != "") {
-                    const musicInfo = (await axios.get(`http://localhost:${configs.port}/search?rid=${RID}`)) as any;
+                    const musicInfo = (await axios.get(`http://localhost:${configs.port}/search?rid=${RID}`)).data as any;
                     const mp3Link = musicInfo.mp3Url;
                     const singer = musicInfo.artist;
                     const title = musicInfo.name;
