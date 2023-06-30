@@ -237,9 +237,9 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
         // 回复信息给 微信服务器
         let content = ''
         if (request.MsgType == 'text') {
-            const searchUrl = `/search?format&kw=${encodeURIComponent(request.Content)}`;
+            const searchUrl = `http://localhost:${configs.port}/search?format&kw=${encodeURIComponent(request.Content)}`;
             const arr = (await axios.get(searchUrl) as any[]);
-            console.log(searchUrl, arr);
+            console.log(arr);
             const arrLength = arr.length;
             let cut = arrLength < 10 ? arrLength : 10;
             const name = []
@@ -249,7 +249,7 @@ wxCheckRouters.post("/wxCheck", async (req, res) => {
             const RID = (request.Content as string).split(" ")[1];
             if (PREV == "play") {
                 if (RID != "") {
-                    const musicInfo = (await axios.get(`/search?rid=${RID}`)) as any;
+                    const musicInfo = (await axios.get(`http://localhost:${configs.port}/search?rid=${RID}`)) as any;
                     const mp3Link = musicInfo.mp3Url;
                     const singer = musicInfo.artist;
                     const title = musicInfo.name;
